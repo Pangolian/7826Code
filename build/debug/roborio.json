@@ -1,0 +1,9 @@
+[
+  {
+    "type": "java",
+    "name": "frcJava",
+    "port": 8349,
+    "target": "10.78.26.2",
+    "project": "StirFryV8Test"
+  }
+]
