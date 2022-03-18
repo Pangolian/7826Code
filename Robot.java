@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -31,8 +33,22 @@ import com.revrobotics.CANSparkMaxLowLevel;
 //import edu.wpi.first.wpilibj.Threads;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+// VISION STUFF
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.cscore.UsbCamera;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.core.Core;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.highgui.HighGui;
+import org.opencv.core.MatOfPoint;
+import java.util.ArrayList;
+import java.util.List;
+import edu.wpi.first.networktables.*;
 
 /**
  * This sample program shows how to control a motor using a joystick. In the operator control part
@@ -131,26 +147,85 @@ public class Robot extends TimedRobot {
    double turnPosition = 0;
    double turnSpeed = 0;
 
+   double turnDis = 0;
 
    //Climing
 
    private Spark m_RightCliming;
-   private Spark m_LeftCliming;
+  // private Spark m_LeftCliming;
 
    // Vision
-   Thread m_VisionThread;
+   Thread m_visionThread;
 
   @Override
   public void robotInit() {
-  // m_BackLeft_encoder.reset();
-   //m_FrontLeft_encoder.reset();
-   //m_BackRight_encoder.reset();
-   //m_encoder.reset();
    
-   // CAMERA STUFF. ASK IAN FOR DETAILS.
-    CameraServer.startAutomaticCapture();
-    CvSource outputSteam = CameraServer.putVideo("Cam1", 640, 480);
-   
+  
+    
+    // m_BackLeft_encoder.reset();
+    //m_FrontLeft_encoder.reset();
+    //m_BackRight_encoder.reset();
+    //m_encoder.reset();
+    
+    // VISION STUFF. ASK IAN FOR DETAILS.
+    //CameraServer.startAutomaticCapture();
+    //CvSource outputSteam = CameraServer.putVideo("CamOverlay", 640, 480);
+
+    NetworkTableEntry topWidth = Shuffleboard.getTab("LiveWindow").add("Top Width", 1).getEntry();
+    NetworkTableEntry topHeight = Shuffleboard.getTab("LiveWindow").add("Top Height", 1).getEntry();
+    NetworkTableEntry bottomWidth = Shuffleboard.getTab("LiveWindow").add("Bottom Width", 1).getEntry();
+    NetworkTableEntry bottomHeight = Shuffleboard.getTab("LiveWindow").add("Bottom Height", 1).getEntry();
+    NetworkTableEntry rlOffset = Shuffleboard.getTab("LiveWindow").add("Offset", 0).getEntry();
+    // System.out.println("check this out" + topWidth);
+
+    m_visionThread =
+        new Thread(
+            () -> {
+              // Get the UsbCamera from CameraServer
+              UsbCamera camera = CameraServer.startAutomaticCapture();
+              // Set the resolution
+              camera.setResolution(640, 480);
+
+              // Get a CvSink. This will capture Mats from the camera
+              CvSink cvSink = CameraServer.getVideo();
+              // Setup a CvSource. This will send images back to the Dashboard
+              CvSource outputStream = CameraServer.putVideo("Hot Trapezoid", 640, 480);
+
+              // Mats are very memory expensive. Lets reuse this Mat.
+              Mat mat = new Mat();
+
+              // This cannot be 'true'. The program will never exit if it is. This
+              // lets the robot stop this thread when restarting robot code or
+              // deploying.
+              while (!Thread.interrupted()) {
+                // Tell the CvSink to grab a frame from the camera and put it
+                // in the source mat.  If there is an error notify the output.
+                if (cvSink.grabFrame(mat) == 0) {
+                  // Send the output the error.
+                  outputStream.notifyError(cvSink.getError());
+                  // skip the rest of the current iteration
+                  continue;
+                }
+                // Put a rectangle on the image
+                //Imgproc.rectangle(mat, new Point(100, 100), new Point(400, 400), new Scalar(50, 205, 50), 5);
+                
+                // Put a trapezoid over the image
+                // Trapezoid points
+                List<MatOfPoint> points = new ArrayList<MatOfPoint>();
+                points.add( new MatOfPoint (
+                new Point(320 - topWidth.getDouble(100) + rlOffset.getDouble(0), topHeight.getDouble(100)), new Point(320 + topWidth.getDouble(100) + rlOffset.getDouble(0), topHeight.getDouble(200)),
+                new Point(320 + bottomWidth.getDouble(100) + rlOffset.getDouble(0), bottomHeight.getDouble(400)), new Point(320 - bottomWidth.getDouble(100) + rlOffset.getDouble(0), bottomHeight.getDouble(400))) );
+                Imgproc.polylines(mat, points, true, new Scalar(50, 205, 50), 5);
+                // Give the output stream a new image to display
+                outputStream.putFrame(mat);
+              }
+            });
+    m_visionThread.setDaemon(true);
+    m_visionThread.start();
+
+
+    
+    
     SendableChooser<String> m_chooser = new SendableChooser<>();
     m_chooser.setDefaultOption("AutonDefault","Default Auton");
     m_chooser.addOption("Auton1TRed", "1");
@@ -217,7 +292,7 @@ public class Robot extends TimedRobot {
 
 //place holder PWM ports
      m_RightCliming = new Spark(0);
-     m_LeftCliming = new Spark(1);
+    // m_LeftCliming = new Spark(1);
 
 
     m_motor.set(VictorSPXControlMode.PercentOutput,0);
@@ -227,7 +302,7 @@ public class Robot extends TimedRobot {
    //m_BackRight_motor.setInverted(true);
    m_BackRight_motor.set(VictorSPXControlMode.PercentOutput,0);
     
-   
+   turnDis = 0;
   }
 
   /*
@@ -246,6 +321,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    FrontRight_drive.set(TalonSRXControlMode.PercentOutput,-.5);
+    //BackRight_drive.setInverted(true)
+    BackRight_drive.set(TalonSRXControlMode.PercentOutput,-.5);
+    FrontLeft_drive.set(TalonSRXControlMode.PercentOutput,-.5);
+    BackLeft_drive.set(TalonSRXControlMode.PercentOutput,-.5);
   //String auton = m_chooser.getSelected();
 
   }
@@ -612,7 +692,8 @@ wait(5000);
 
   @Override
   public void teleopPeriodic() {
-    drive();
+    //drive();
+    climbing();
     //joystickMotorTest();
 
     // This elevator code works
@@ -675,7 +756,7 @@ wait(5000);
   
   
   @Override
-  public void autonomousPeriodic() throws InterruptedException{
+  public void autonomousPeriodic() {
     
     /*
     if(auton == "Default Auton"){
@@ -724,18 +805,16 @@ wait(5000);
     }
     */
     //public void AutonDriveBackShoot1() throws InterruptedException{
-      driveAuton(0.9);
-      wait(2000);
-      rotate(0.5, -0.5);
-      wait(500);
-      shoot(4,0.8);
+      //driveAuton(0.9);
+      //m_BackLeft_motor.wait(2000);
+      //rotate(0.5, -0.5);
+      //wait(500);
+      //shoot(4,0.8);
     //  }
   }
 
   public void drive() {
-
-    //System.out.println(m_FrontLeft_joystick.getY());
-    double frspeed = m_FrontRightJoystick.getTwist();
+ //double frspeed = m_FrontRightJoystick.getTwist();
     
     //double  flspeed = 0;
     //double  brspeed = 0;
@@ -804,20 +883,22 @@ m_BackLeft_motor.set(VictorSPXControlMode.PercentOutput, allSpeed);
 //m_BackRight_motor.setInverted(true);
 m_BackRight_motor.set(VictorSPXControlMode.PercentOutput, allSpeed);
 }
-*/
 
+*/
   // New turning
+ 
   setTurnMotor(m_motor, m_encoder, false);
   setTurnMotor(m_FrontLeft_motor, m_FrontLeft_encoder, false);
-  setTurnMotor(m_BackRight_motor, m_BackRight_encoder, false);
+  setTurnMotor(m_BackRight_motor, m_BackRight_encoder, true);
   setTurnMotor(m_BackLeft_motor, m_BackLeft_encoder, false);
 
   FrontRight_drive.set(TalonSRXControlMode.PercentOutput,m_FrontRightJoystick.getY());
-  BackRight_drive.setInverted(true);
+  //BackRight_drive.setInverted(true);
   BackRight_drive.set(TalonSRXControlMode.PercentOutput,m_BackRightJoystick.getY());
   FrontLeft_drive.set(TalonSRXControlMode.PercentOutput,m_FrontLeftJoystick.getY());
   BackLeft_drive.set(TalonSRXControlMode.PercentOutput,BackLeftJoystick.getY());
 
+  steering();
 
 /*
     if (brspeed < 0.15 && brspeed > -0.15){
@@ -912,7 +993,7 @@ m_BackRight_motor.set(VictorSPXControlMode.PercentOutput, allSpeed);
 */
     //drive stuff
    
-    
+    System.out.println(m_BackRight_encoder.getDistance());
 
     //pivoting
     
@@ -921,16 +1002,20 @@ m_BackRight_motor.set(VictorSPXControlMode.PercentOutput, allSpeed);
       BackRight_drive.set(TalonSRXControlMode.PercentOutput,-m_BackRightJoystick.getY());
      
     }
-
-    steering();
-
+   
+   
+      //m_BackRight_motor.set(VictorSPXControlMode.PercentOutput, m_FrontRightJoystick.getTwist());
+    //steering();cz
+  //  getDistance();
+ //   setDistance();
+    /*
     if(m_FrontRightJoystick.getRawButton(5)) {
       correctMotor(m_FrontLeft_motor, m_FrontLeft_encoder);
       correctMotor(m_motor, m_encoder);
       correctMotor(m_BackRight_motor, m_BackRight_encoder);
       correctMotor(m_BackLeft_motor, m_BackLeft_encoder);
     }
-
+*/
   /*
     if(m_FrontRightJoystick.getRawButton(3)){
       FrontLeft_drive.set(TalonSRXControlMode.PercentOutput,-m_FrontLeftJoystick.getY());
@@ -938,9 +1023,66 @@ m_BackRight_motor.set(VictorSPXControlMode.PercentOutput, allSpeed);
     
     }
     */
+    
+  }
+  public void getTurnDisWithJoy(){
+    if(m_FrontRightJoystick.getTwist() > .1 && (m_FrontRightJoystick.getTwist() < -.1)){
+      turnDis += m_FrontRightJoystick.getTwist() * .1;
+    }
+  
+  }
+  public void getDistance(){
+   
+    if(m_FrontRightJoystick.getRawButton(11)){
+      turnDis += 10;
+    }
+    if(m_FrontRightJoystick.getRawButton(12)){
+      turnDis -= 10;
+    } // Add joystick twist to turnDis
   }
 
+  public void setDistance(){
+    if(m_encoder.getDistance() < turnDis){
+      m_motor.set(VictorSPXControlMode.PercentOutput,.5);
+    }
+    else if(m_encoder.getDistance() > turnDis){
+      m_motor.set(VictorSPXControlMode.PercentOutput, -.5);
+    }
+    else {
+      m_motor.set(VictorSPXControlMode.PercentOutput, 0);
+    }
 
+   if(m_FrontLeft_encoder.getDistance() < turnDis){
+      m_FrontLeft_motor.set(VictorSPXControlMode.PercentOutput, .5);
+    }
+   else if(m_FrontLeft_encoder.getDistance() > turnDis){
+      m_FrontLeft_motor.set(VictorSPXControlMode.PercentOutput,-.5);
+    }
+    else {
+      m_FrontLeft_motor.set(VictorSPXControlMode.PercentOutput, 0);
+    }
+
+  if(m_BackRight_encoder.getDistance() < turnDis){
+      m_BackRight_motor.set(VictorSPXControlMode.PercentOutput, .5);
+    }
+  else if(m_BackRight_encoder.getDistance() > turnDis){
+      m_BackRight_motor.set(VictorSPXControlMode.PercentOutput, -.5);
+    }
+  else {
+      m_BackRight_motor.set(VictorSPXControlMode.PercentOutput, 0);
+    }
+
+  if(m_BackLeft_encoder.getDistance() < turnDis){
+    m_BackLeft_motor.set(VictorSPXControlMode.PercentOutput, .5);
+    }
+  else if(m_BackLeft_encoder.getDistance() > turnDis){
+      m_BackLeft_motor.set(VictorSPXControlMode.PercentOutput, -.5);
+    }
+    else {
+      m_BackLeft_motor.set(VictorSPXControlMode.PercentOutput, 0);
+    }
+  }
+  
  public void correctMotor(VictorSPX motor, Encoder encoder) {
     double distance = encoder.getDistance();
     double speed = 0;
@@ -952,10 +1094,12 @@ m_BackRight_motor.set(VictorSPXControlMode.PercentOutput, allSpeed);
     motor.set(VictorSPXControlMode.PercentOutput, speed);
  }
 
+
+
  public void setTurnMotor(VictorSPX motor, Encoder encoder, boolean invert) {
   double distance = encoder.getDistance();
-
-  if (invert) {distance = -distance;}
+  
+  if (invert) {distance -= .1178097245961724;}
   
   double speed = turnSpeed;
   if (distance > turnPosition) {
@@ -973,8 +1117,8 @@ m_BackRight_motor.set(VictorSPXControlMode.PercentOutput, allSpeed);
 
   if (!(timesPrinted >= 5)) {
 
-  System.out.println("Encoder number " + timesPrinted + ": " + encoder.getDistance());
-  //timesPrinted += 1;
+    System.out.println("Master Distance: " + m_encoder.getDistance());
+    System.out.println("Current Distance: " + m_BackRight_encoder.getDistance());
   }
 }
       
@@ -994,15 +1138,15 @@ m_BackRight_motor.set(VictorSPXControlMode.PercentOutput, allSpeed);
     turnPosition = m_encoder.getDistance();
     
   }
-  public void climing(){
-    if(m_joystick.getRawButton(6)){
+  public void climbing(){
+    
       m_RightCliming.set(m_joystick.getY());
-      m_LeftCliming.set(m_joystick.getY());
-    }
-    else{
-      m_RightCliming.set(0);
-      m_LeftCliming.set(0);
-    }
+     // m_LeftCliming.set(m_joystick.getY());
+    
+    
+      
+    //  m_LeftCliming.set(0);
+    
   }
   
 public void joystickMotorTest(){
