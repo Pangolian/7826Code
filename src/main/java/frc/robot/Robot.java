@@ -9,6 +9,7 @@ import java.io.Console;
 import javax.lang.model.element.ElementVisitor;
 import javax.swing.JInternalFrame.JDesktopIcon;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -19,6 +20,12 @@ import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+
+import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.Constants.OIConstants;
 
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
@@ -67,6 +74,10 @@ public class Robot extends TimedRobot {
   private static final int kBackRightJoystickPort = 0;
   private static final int kBackRightEncoderPortA = 9;
   private static final int kBackRightEncoderPortB = 8;
+
+  public DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+
+  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   
   String auton;
  
@@ -611,7 +622,18 @@ wait(5000);
 
   @Override
   public void teleopPeriodic() {
-    drive();
+    m_driveSubsystem.setDefaultCommand(
+        // The left stick controls translation of the robot.
+        // Turning is controlled by the X axis of the right stick.
+        new RunCommand(
+            () -> m_driveSubsystem.drive(
+                MathUtil.applyDeadband(-m_driverController.getLeftY(), OIConstants.kdeadband) * 5,
+                MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kdeadband) * 5,
+                MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kdeadband) * 4,
+                true),
+            m_driveSubsystem));
+
+  
     //joystickMotorTest();
 
     // This elevator code works
@@ -674,7 +696,7 @@ wait(5000);
   
   
   @Override
-  public void autonomousPeriodic() throws InterruptedException{
+  public void autonomousPeriodic(){
     
     /*
     if(auton == "Default Auton"){
@@ -723,286 +745,286 @@ wait(5000);
     }
     */
     //public void AutonDriveBackShoot1() throws InterruptedException{
-      driveAuton(0.9);
-      wait(2000);
-      rotate(0.5, -0.5);
-      wait(500);
-      shoot(4,0.8);
+      // driveAuton(0.9);
+      // wait(2000);
+      // rotate(0.5, -0.5);
+      // wait(500);
+      // shoot(4,0.8);
     //  }
   }
 
-  public void drive() {
+//   public void drive() {
 
-    //System.out.println(m_FrontLeft_joystick.getY());
-    double frspeed = m_FrontRightJoystick.getTwist();
+//     //System.out.println(m_FrontLeft_joystick.getY());
+//     double frspeed = m_FrontRightJoystick.getTwist();
     
-    //double  flspeed = 0;
-    //double  brspeed = 0;
-    //double  blspeed = 0;
+//     //double  flspeed = 0;
+//     //double  brspeed = 0;
+//     //double  blspeed = 0;
 
-    /*
+//     /*
    
-    if(m_FrontLeft_encoder.getDistance() <= m_encoder.getDistance()){
-      m_motor.set(VictorSPXControlMode.PercentOutput,.01);
-    }
-    if(m_FrontLeft_encoder.getDistance() >= m_encoder.getDistance()){
-      m_motor.set(VictorSPXControlMode.PercentOutput,-.01);
-    }
-    if(m_BackLeft_encoder.getDistance() <= m_encoder.getDistance()){
-      m_BackLeft_motor.set(VictorSPXControlMode.PercentOutput,.01);
-    }
-    if(m_BackLeft_encoder.getDistance() >= m_encoder.getDistance()){
-      m_BackLeft_motor.set(VictorSPXControlMode.PercentOutput,-.01);
-    }
-    if(m_BackRight_encoder.getDistance() <= m_encoder.getDistance()){
-      m_BackRight_motor.set(VictorSPXControlMode.PercentOutput,.01);
-    }
-    if(m_BackRight_encoder.getDistance() >= m_encoder.getDistance()){
-      m_BackRight_motor.set(VictorSPXControlMode.PercentOutput,-.01);
-    }
+//     if(m_FrontLeft_encoder.getDistance() <= m_encoder.getDistance()){
+//       m_motor.set(VictorSPXControlMode.PercentOutput,.01);
+//     }
+//     if(m_FrontLeft_encoder.getDistance() >= m_encoder.getDistance()){
+//       m_motor.set(VictorSPXControlMode.PercentOutput,-.01);
+//     }
+//     if(m_BackLeft_encoder.getDistance() <= m_encoder.getDistance()){
+//       m_BackLeft_motor.set(VictorSPXControlMode.PercentOutput,.01);
+//     }
+//     if(m_BackLeft_encoder.getDistance() >= m_encoder.getDistance()){
+//       m_BackLeft_motor.set(VictorSPXControlMode.PercentOutput,-.01);
+//     }
+//     if(m_BackRight_encoder.getDistance() <= m_encoder.getDistance()){
+//       m_BackRight_motor.set(VictorSPXControlMode.PercentOutput,.01);
+//     }
+//     if(m_BackRight_encoder.getDistance() >= m_encoder.getDistance()){
+//       m_BackRight_motor.set(VictorSPXControlMode.PercentOutput,-.01);
+//     }
   
   
-    if (frspeed < 0.15 && frspeed > -0.15){
-      frspeed = 0;
-    }
+//     if (frspeed < 0.15 && frspeed > -0.15){
+//       frspeed = 0;
+//     }
 
-    if (frspeed > 0.9){
-      frspeed = 0.9;
-    }
+//     if (frspeed > 0.9){
+//       frspeed = 0.9;
+//     }
 
-    if (frspeed < -0.9){
-      frspeed = -0.9;
-    }
+//     if (frspeed < -0.9){
+//       frspeed = -0.9;
+//     }
   
-    if (allSpeed < 0.15 && allSpeed > -0.15){
-      allSpeed = 0;
-    }
+//     if (allSpeed < 0.15 && allSpeed > -0.15){
+//       allSpeed = 0;
+//     }
 
-    if (allSpeed > 0.9){
-      allSpeed = 0.9;
-    }
+//     if (allSpeed > 0.9){
+//       allSpeed = 0.9;
+//     }
 
-    if (allSpeed < -0.9){
-      allSpeed = -0.9;
-    }
-    */
+//     if (allSpeed < -0.9){
+//       allSpeed = -0.9;
+//     }
+//     */
 
-// Old turning
-/*
-if(m_joystick.getY() + .25 <=.9 || m_FrontRightJoystick.getTwist() + .25 >= -.9 && time <= 1 ){
-time ++;
-allSpeed = 0;
-m_motor.set(VictorSPXControlMode.PercentOutput,frspeed);
-}
-if((m_joystick.getY() + .25 <=.1 || m_joystick.getY() + .25 >=-.1  && time > 0)){
-time --;
-allSpeed = m_FrontRightJoystick.getTwist();
-m_FrontLeft_motor.set(VictorSPXControlMode.PercentOutput,allSpeed);
-//m_BackLeft_motor.setInverted(true);
-m_BackLeft_motor.set(VictorSPXControlMode.PercentOutput, allSpeed);
-//m_BackRight_motor.setInverted(true);
-m_BackRight_motor.set(VictorSPXControlMode.PercentOutput, allSpeed);
-}
-*/
+// // Old turning
+// /*
+// if(m_joystick.getY() + .25 <=.9 || m_FrontRightJoystick.getTwist() + .25 >= -.9 && time <= 1 ){
+// time ++;
+// allSpeed = 0;
+// m_motor.set(VictorSPXControlMode.PercentOutput,frspeed);
+// }
+// if((m_joystick.getY() + .25 <=.1 || m_joystick.getY() + .25 >=-.1  && time > 0)){
+// time --;
+// allSpeed = m_FrontRightJoystick.getTwist();
+// m_FrontLeft_motor.set(VictorSPXControlMode.PercentOutput,allSpeed);
+// //m_BackLeft_motor.setInverted(true);
+// m_BackLeft_motor.set(VictorSPXControlMode.PercentOutput, allSpeed);
+// //m_BackRight_motor.setInverted(true);
+// m_BackRight_motor.set(VictorSPXControlMode.PercentOutput, allSpeed);
+// }
+// */
 
-  // New turning
-  setTurnMotor(m_motor, m_encoder, false);
-  setTurnMotor(m_FrontLeft_motor, m_FrontLeft_encoder, false);
-  setTurnMotor(m_BackRight_motor, m_BackRight_encoder, false);
-  setTurnMotor(m_BackLeft_motor, m_BackLeft_encoder, false);
+//   // New turning
+//   setTurnMotor(m_motor, m_encoder, false);
+//   setTurnMotor(m_FrontLeft_motor, m_FrontLeft_encoder, false);
+//   setTurnMotor(m_BackRight_motor, m_BackRight_encoder, false);
+//   setTurnMotor(m_BackLeft_motor, m_BackLeft_encoder, false);
 
-  FrontRight_drive.set(TalonSRXControlMode.PercentOutput,m_FrontRightJoystick.getY());
-  BackRight_drive.setInverted(true);
-  BackRight_drive.set(TalonSRXControlMode.PercentOutput,m_BackRightJoystick.getY());
-  FrontLeft_drive.set(TalonSRXControlMode.PercentOutput,m_FrontLeftJoystick.getY());
-  BackLeft_drive.set(TalonSRXControlMode.PercentOutput,BackLeftJoystick.getY());
+//   FrontRight_drive.set(TalonSRXControlMode.PercentOutput,m_FrontRightJoystick.getY());
+//   BackRight_drive.setInverted(true);
+//   BackRight_drive.set(TalonSRXControlMode.PercentOutput,m_BackRightJoystick.getY());
+//   FrontLeft_drive.set(TalonSRXControlMode.PercentOutput,m_FrontLeftJoystick.getY());
+//   BackLeft_drive.set(TalonSRXControlMode.PercentOutput,BackLeftJoystick.getY());
 
 
-/*
-    if (brspeed < 0.15 && brspeed > -0.15){
-      brspeed = 0;
-    }
+// /*
+//     if (brspeed < 0.15 && brspeed > -0.15){
+//       brspeed = 0;
+//     }
 
-    if (brspeed > 0.9){
-      brspeed = 0.9;
-    }
+//     if (brspeed > 0.9){
+//       brspeed = 0.9;
+//     }
 
-    if (brspeed < -0.9){
-      flspeed = -0.9;
-    }
-     if(blspeed < 0.15 && blspeed > -0.15){
-      brspeed = 0;
-    }
+//     if (brspeed < -0.9){
+//       flspeed = -0.9;
+//     }
+//      if(blspeed < 0.15 && blspeed > -0.15){
+//       brspeed = 0;
+//     }
 
-    if (blspeed > 0.9){
-      brspeed = 0.9;
-    }
+//     if (blspeed > 0.9){
+//       brspeed = 0.9;
+//     }
 
-    if (blspeed < -0.9){
-      blspeed = -0.9;
-    }
+//     if (blspeed < -0.9){
+//       blspeed = -0.9;
+//     }
 
-    if(m_FrontLeft_encoder.getDistance() >= m_encoder.getDistance()){
-      flspeed -= .1;
-    }
-    if(m_FrontLeft_encoder.getDistance() <= m_encoder.getDistance()){
-      flspeed += .1;
-    }
-    if(m_BackLeft_encoder.getDistance() >= m_encoder.getDistance()){
-      blspeed -= .1;
-    }
-    if(m_BackLeft_encoder.getDistance() <= m_encoder.getDistance()){
-      blspeed += .1;
-    }
-    if(m_BackRight_encoder.getDistance() >= m_encoder.getDistance()){
-      brspeed -= .1;
-    }
-    if(m_BackRight_encoder.getDistance() <= m_encoder.getDistance()){
-      brspeed += .1;
-    /*
-    if((m_BackRight_encoder.getDistance() >= -.1) && (m_BackRight_encoder.getDistance() <= .1)){
-      brspeed = 0;
-    }
-    if((m_FrontLeft_encoder.getDistance() >= -.1) && (m_FrontLeft_encoder.getDistance() <= .1)){
-      frspeed = 0;
-    }
-    if((m_BackLeft_encoder.getDistance() >= -.1) && (m_BackLeft_encoder.getDistance() <= .1)){
-      blspeed = 0;
-    }
+//     if(m_FrontLeft_encoder.getDistance() >= m_encoder.getDistance()){
+//       flspeed -= .1;
+//     }
+//     if(m_FrontLeft_encoder.getDistance() <= m_encoder.getDistance()){
+//       flspeed += .1;
+//     }
+//     if(m_BackLeft_encoder.getDistance() >= m_encoder.getDistance()){
+//       blspeed -= .1;
+//     }
+//     if(m_BackLeft_encoder.getDistance() <= m_encoder.getDistance()){
+//       blspeed += .1;
+//     }
+//     if(m_BackRight_encoder.getDistance() >= m_encoder.getDistance()){
+//       brspeed -= .1;
+//     }
+//     if(m_BackRight_encoder.getDistance() <= m_encoder.getDistance()){
+//       brspeed += .1;
+//     /*
+//     if((m_BackRight_encoder.getDistance() >= -.1) && (m_BackRight_encoder.getDistance() <= .1)){
+//       brspeed = 0;
+//     }
+//     if((m_FrontLeft_encoder.getDistance() >= -.1) && (m_FrontLeft_encoder.getDistance() <= .1)){
+//       frspeed = 0;
+//     }
+//     if((m_BackLeft_encoder.getDistance() >= -.1) && (m_BackLeft_encoder.getDistance() <= .1)){
+//       blspeed = 0;
+//     }
 
-    */
+//     */
     
    
 
     
 
-/*    
-    if(m_FrontLeft_encoder.getDistance() < m_BackRight_encoder.getDistance()) {
-      m_FrontLeft_motor.set(VictorSPXControlMode.PercentOutput,speed+0.2);
-    }
+// /*    
+//     if(m_FrontLeft_encoder.getDistance() < m_BackRight_encoder.getDistance()) {
+//       m_FrontLeft_motor.set(VictorSPXControlMode.PercentOutput,speed+0.2);
+//     }
 
-    if(m_BackLeft_encoder.getDistance() < m_BackRight_encoder.getDistance()) {
-      m_BackLeft_motor.set(VictorSPXControlMode.PercentOutput,speed+0.2);
-    }
+//     if(m_BackLeft_encoder.getDistance() < m_BackRight_encoder.getDistance()) {
+//       m_BackLeft_motor.set(VictorSPXControlMode.PercentOutput,speed+0.2);
+//     }
 
-    if(m_encoder.getDistance() < m_BackRight_encoder.getDistance()) {
-      m_motor.set(VictorSPXControlMode.PercentOutput,speed+0.2);
-    }
+//     if(m_encoder.getDistance() < m_BackRight_encoder.getDistance()) {
+//       m_motor.set(VictorSPXControlMode.PercentOutput,speed+0.2);
+//     }
 
-    //if(m_FrontLeft_encoder.getDistance() < m_BackLeft_encoder.getDistance()) {
-      //m_FrontLeft_motor.set(VictorSPXControlMode.PercentOutput,speed+0.2);
-    //}
+//     //if(m_FrontLeft_encoder.getDistance() < m_BackLeft_encoder.getDistance()) {
+//       //m_FrontLeft_motor.set(VictorSPXControlMode.PercentOutput,speed+0.2);
+//     //}
 
-    if(m_BackLeft_encoder.getDistance() > m_BackRight_encoder.getDistance()) {
-      m_BackLeft_motor.set(VictorSPXControlMode.PercentOutput,speed-0.2);
-    }
+//     if(m_BackLeft_encoder.getDistance() > m_BackRight_encoder.getDistance()) {
+//       m_BackLeft_motor.set(VictorSPXControlMode.PercentOutput,speed-0.2);
+//     }
 
-    if(m_FrontLeft_encoder.getDistance() > m_BackRight_encoder.getDistance()) {
-      m_FrontLeft_motor.set(VictorSPXControlMode.PercentOutput,speed-0.2);
-    }
+//     if(m_FrontLeft_encoder.getDistance() > m_BackRight_encoder.getDistance()) {
+//       m_FrontLeft_motor.set(VictorSPXControlMode.PercentOutput,speed-0.2);
+//     }
 
-    if(m_encoder.getDistance() > m_BackRight_encoder.getDistance()) {
-      m_motor.set(VictorSPXControlMode.PercentOutput,speed-0.2);
-    }
+//     if(m_encoder.getDistance() > m_BackRight_encoder.getDistance()) {
+//       m_motor.set(VictorSPXControlMode.PercentOutput,speed-0.2);
+//     }
 
-    //if(m_FrontLeft_encoder.getDistance() > m_BackLeft_encoder.getDistance()) {
-      //m_FrontLeft_motor.set(VictorSPXControlMode.PercentOutput,speed-0.2);
-    //}
-*/
-    //drive stuff
+//     //if(m_FrontLeft_encoder.getDistance() > m_BackLeft_encoder.getDistance()) {
+//       //m_FrontLeft_motor.set(VictorSPXControlMode.PercentOutput,speed-0.2);
+//     //}
+// */
+//     //drive stuff
    
     
 
-    //pivoting
+//     //pivoting
     
-    if(m_FrontRightJoystick.getRawButton(1)){
-      FrontRight_drive.set(TalonSRXControlMode.PercentOutput,-m_FrontRightJoystick.getY());
-      BackRight_drive.set(TalonSRXControlMode.PercentOutput,-m_BackRightJoystick.getY());
+//     if(m_FrontRightJoystick.getRawButton(1)){
+//       FrontRight_drive.set(TalonSRXControlMode.PercentOutput,-m_FrontRightJoystick.getY());
+//       BackRight_drive.set(TalonSRXControlMode.PercentOutput,-m_BackRightJoystick.getY());
      
-    }
+//     }
 
-    steering();
+//     steering();
 
-    if(m_FrontRightJoystick.getRawButton(5)) {
-      correctMotor(m_FrontLeft_motor, m_FrontLeft_encoder);
-      correctMotor(m_motor, m_encoder);
-      correctMotor(m_BackRight_motor, m_BackRight_encoder);
-      correctMotor(m_BackLeft_motor, m_BackLeft_encoder);
-    }
+//     if(m_FrontRightJoystick.getRawButton(5)) {
+//       correctMotor(m_FrontLeft_motor, m_FrontLeft_encoder);
+//       correctMotor(m_motor, m_encoder);
+//       correctMotor(m_BackRight_motor, m_BackRight_encoder);
+//       correctMotor(m_BackLeft_motor, m_BackLeft_encoder);
+//     }
 
-  /*
-    if(m_FrontRightJoystick.getRawButton(3)){
-      FrontLeft_drive.set(TalonSRXControlMode.PercentOutput,-m_FrontLeftJoystick.getY());
-      BackLeft_drive.set(TalonSRXControlMode.PercentOutput,-BackLeftJoystick.getY());
+//   /*
+//     if(m_FrontRightJoystick.getRawButton(3)){
+//       FrontLeft_drive.set(TalonSRXControlMode.PercentOutput,-m_FrontLeftJoystick.getY());
+//       BackLeft_drive.set(TalonSRXControlMode.PercentOutput,-BackLeftJoystick.getY());
     
-    }
-    */
-  }
+//     }
+//     */
+//   }
 
 
- public void correctMotor(VictorSPX motor, Encoder encoder) {
-    double distance = encoder.getDistance();
-    double speed = 0;
-    if (distance > 0) {
-      speed = -.1;
-    } else if (distance < 0) {
-      speed = .1;
-    }
-    motor.set(VictorSPXControlMode.PercentOutput, speed);
- }
+//  public void correctMotor(VictorSPX motor, Encoder encoder) {
+//     double distance = encoder.getDistance();
+//     double speed = 0;
+//     if (distance > 0) {
+//       speed = -.1;
+//     } else if (distance < 0) {
+//       speed = .1;
+//     }
+//     motor.set(VictorSPXControlMode.PercentOutput, speed);
+//  }
 
- public void setTurnMotor(VictorSPX motor, Encoder encoder, boolean invert) {
-  double distance = encoder.getDistance();
+//  public void setTurnMotor(VictorSPX motor, Encoder encoder, boolean invert) {
+//   double distance = encoder.getDistance();
 
-  if (invert) {distance = -distance;}
+//   if (invert) {distance = -distance;}
   
-  double speed = turnSpeed;
-  if (distance > turnPosition) {
-    speed = -speed;
-    if (speed == 0) {
-      speed = -0.1;
-    }
-  } else if (distance < turnPosition) {
-    if (speed == 0){
-      speed = 0.1;
-    }
-  }
+//   double speed = turnSpeed;
+//   if (distance > turnPosition) {
+//     speed = -speed;
+//     if (speed == 0) {
+//       speed = -0.1;
+//     }
+//   } else if (distance < turnPosition) {
+//     if (speed == 0){
+//       speed = 0.1;
+//     }
+//   }
   
-  motor.set(VictorSPXControlMode.PercentOutput, speed);
+//   motor.set(VictorSPXControlMode.PercentOutput, speed);
 
-  if (!(timesPrinted >= 5)) {
+//   if (!(timesPrinted >= 5)) {
 
-  System.out.println("Encoder number " + timesPrinted + ": " + encoder.getDistance());
-  //timesPrinted += 1;
-  }
-}
+//   System.out.println("Encoder number " + timesPrinted + ": " + encoder.getDistance());
+//   //timesPrinted += 1;
+//   }
+// }
       
     
-  public void steering(){
-    turnSpeed = java.lang.Math.abs(m_FrontRightJoystick.getTwist());
-    if (turnSpeed > 0.9) {
-      turnSpeed = 0.9;
-    }
-    double turningSpeed = m_FrontRightJoystick.getTwist();
-    if (turningSpeed > 0.9) {
-      turningSpeed = 0.9;
-    } else if (turningSpeed < -0.9) {
-      turningSpeed = -0.9;
-    }
-    m_motor.set(VictorSPXControlMode.PercentOutput, turningSpeed);
-    turnPosition = m_encoder.getDistance();
+//   public void steering(){
+//     turnSpeed = java.lang.Math.abs(m_FrontRightJoystick.getTwist());
+//     if (turnSpeed > 0.9) {
+//       turnSpeed = 0.9;
+//     }
+//     double turningSpeed = m_FrontRightJoystick.getTwist();
+//     if (turningSpeed > 0.9) {
+//       turningSpeed = 0.9;
+//     } else if (turningSpeed < -0.9) {
+//       turningSpeed = -0.9;
+//     }
+//     m_motor.set(VictorSPXControlMode.PercentOutput, turningSpeed);
+//     turnPosition = m_encoder.getDistance();
     
-  }
-  public void climing(){
-    if(m_joystick.getRawButton(6)){
-      m_RightCliming.set(m_joystick.getY());
-      m_LeftCliming.set(m_joystick.getY());
-    }
-    else{
-      m_RightCliming.set(0);
-      m_LeftCliming.set(0);
-    }
-  }
+//   }
+//   public void climing(){
+//     if(m_joystick.getRawButton(6)){
+//       m_RightCliming.set(m_joystick.getY());
+//       m_LeftCliming.set(m_joystick.getY());
+//     }
+//     else{
+//       m_RightCliming.set(0);
+//       m_LeftCliming.set(0);
+//     }
+//   }
   
 public void joystickMotorTest(){
  // m_shooter.set(test_shooter.getY());
