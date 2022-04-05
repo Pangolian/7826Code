@@ -16,6 +16,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.ModuleConstants;
 
@@ -139,6 +140,9 @@ public class SwerveModule {
         m_driveMotor.set(ControlMode.PercentOutput, state.speedMetersPerSecond);
         m_turningMotor.set(ControlMode.PercentOutput, turnOutput);
         // m_turningMotor.set(ControlMode.Position, value);
+
+        SmartDashboard.putNumber("TurnOutput", turnOutput);
+        SmartDashboard.putNumber("MPS", state.speedMetersPerSecond);
     }
 
     public void stop() {
