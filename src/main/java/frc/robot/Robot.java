@@ -1249,35 +1249,11 @@ public class Robot extends TimedRobot {
     if (buttonMonke.getRightTriggerAxis() != 0) {
       m_shooter.set(0.2);
     } else if (buttonMonke.getLeftTriggerAxis() != 0) {
-<<<<<<< HEAD
-      m_shooter.set(0.2);
-    }
-   else {
-=======
       m_shooter.set(0.1);
     } else {
->>>>>>> 117b00950ab7f81310a29814354d02b8f3f61e6b
       m_shooter.set(0);
     }
    
-<<<<<<< HEAD
-   }
-   
-   if(buttonMonke.getRightBumper()){
-     //rightArm.set(-.4);
-   }
-   else if(buttonMonke.getLeftBumper()){
-     rightArm.set(.4);
-   }
-   else{
-     if(buttonMonke.getRightY() > .1 || buttonMonke.getRightY() < -.1 ) {
-     rightArm.set(buttonMonke.getLeftY() * .9);
-     leftArm.set(buttonMonke.getLeftY() * 9);
-     } else {
-      rightArm.set(0);
-      leftArm.set(0);
-     }
-=======
     if (buttonMonke.getRightBumper()) {
       rightArm.set(-.4);
     } else if (buttonMonke.getLeftBumper()) {
@@ -1286,7 +1262,6 @@ public class Robot extends TimedRobot {
      rightArm.set(buttonMonke.getLeftY() * .9);
      leftArm.set(buttonMonke.getLeftY() * .9);
     }
->>>>>>> 117b00950ab7f81310a29814354d02b8f3f61e6b
      
     if(driveController.getLeftBumper()) {
       angleMotor.set(.2);
@@ -1296,15 +1271,7 @@ public class Robot extends TimedRobot {
     } else {
       angleMotor.set(-buttonMonke.getRightY() * .9);
     }
-<<<<<<< HEAD
-    System.out.println(buttonMonke.getLeftY() + "" + buttonMonke.getRightY());
-  
-}
-    }
-  }
-=======
   }
 }
->>>>>>> 117b00950ab7f81310a29814354d02b8f3f61e6b
 
 // f in chat for our fallen lines of code
