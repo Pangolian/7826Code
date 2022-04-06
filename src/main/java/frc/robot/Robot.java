@@ -1461,15 +1461,15 @@ wait(5000);
   public void aiming() {
     double heading_error = -tx.getDouble(0.0);
     double steering_adjust = 0.0;
+    
     if (tx.getDouble(0.0) > 1.0) {
-      steering_adjust = KpAim*heading_error - min_aim_command;
+      steering_adjust = KpAim * heading_error - min_aim_command;
     } else if (tx.getDouble(0.0) < 1.0) {
-      steering_adjust = KpAim*heading_error + min_aim_command;
+      steering_adjust = KpAim * heading_error + min_aim_command;
     }
 
     m_driveSubsystem.drive(0, 0, steering_adjust * 1, false); // * 0.6
-    //left_command += steering_adjust;
-    //right_command -= steering_adjust;
+
     if (MathUtil.applyDeadband(tx.getDouble(0.0), 30) == 0) {
       inRange = true;
     } else {
@@ -1483,10 +1483,10 @@ wait(5000);
 
     if (tx.getDouble(0.0) > 1.0) {
       steering_adjust = KpAim * heading_error - min_aim_command;
-    }
-    else if(tx.getDouble(0.0) < -1){
+    } else if(tx.getDouble(0.0) < 1.0) {
       steering_adjust = KpAim * heading_error + min_aim_command; 
     }
+    
     double distance_adjust = KpDistance * distance_error;
     m_driveSubsystem.drive(distance_adjust, 0, steering_adjust * 1, false);
   }
