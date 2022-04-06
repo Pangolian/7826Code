@@ -181,7 +181,7 @@ public class Robot extends TimedRobot {
   NetworkTableEntry ty = limelightTable.getEntry("ty");
   NetworkTableEntry ta = limelightTable.getEntry("ta");
   double KpAim = -0.1; // Proportional control constant
-  double KpDistance = -0.1;
+  double KpDistance = -0.05;
   double min_aim_command = 0.05; // 0.05
 
   // how many degrees back is your limelight rotated from perfectly vertical?
@@ -1187,11 +1187,12 @@ public class Robot extends TimedRobot {
 
     if (tx.getDouble(0.0) > 1.0) {
       steering_adjust = KpAim * heading_error - min_aim_command;
-    } else if(tx.getDouble(0.0) < 1.0) {
+    } else if(tx.getDouble(0.0) < -1.0) {
       steering_adjust = KpAim * heading_error + min_aim_command; 
     }
     
     double distance_adjust = KpDistance * distance_error;
+    
     m_driveSubsystem.drive(distance_adjust, 0, steering_adjust * 1, false);
   }
 
