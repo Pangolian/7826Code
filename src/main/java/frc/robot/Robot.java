@@ -795,9 +795,10 @@ wait(5000);
       deceleration();
       
       System.out.println(xSpeed + " and" + ySpeed);
-      m_driveSubsystem.drive(MathUtil.applyDeadband(-driveController.getRightY(), OIConstants.kdeadband) * 2 ,MathUtil.applyDeadband(driveController.getRightX(), OIConstants.kdeadband) * 2, MathUtil.applyDeadband(driveController.getLeftX(), OIConstants.kdeadband) * 0.6, //4
+      m_driveSubsystem.drive(MathUtil.applyDeadband(-driveController.getRightY(), OIConstants.kdeadband) * 2 ,MathUtil.applyDeadband(driveController.getRightX(), OIConstants.kdeadband) * 2, MathUtil.applyDeadband(driveController.getLeftX(), OIConstants.kdeadband) * .8, //4
         false);
       System.out.println(MathUtil.applyDeadband(driveController.getLeftX(), OIConstants.kdeadband) * 0.6);
+      //2, 2 .6
 
       controler();
       // The left stick controls translation of the robot.
@@ -1551,9 +1552,9 @@ wait(5000);
     }
 
     if (buttonMonke.getYButton()) {
-      m_elevator.set(VictorSPXControlMode.PercentOutput, 0.8);
+      m_elevator.set(VictorSPXControlMode.PercentOutput, 0.4);
     } else if (buttonMonke.getAButton()) {
-      m_elevator.set(VictorSPXControlMode.PercentOutput, -0.8);
+      m_elevator.set(VictorSPXControlMode.PercentOutput, -0.4);
     } else {
       m_elevator.set(VictorSPXControlMode.PercentOutput, 0);
     }
@@ -1567,9 +1568,9 @@ wait(5000);
     }
 
     if (buttonMonke.getRightTriggerAxis() != 0) {
-      m_shooter.set(0.8);
+      m_shooter.set(0.2);
     } else if (buttonMonke.getLeftTriggerAxis() != 0) {
-      m_shooter.set(0.1);
+      m_shooter.set(0.2);
     }
    else {
       m_shooter.set(0);
@@ -1583,9 +1584,13 @@ wait(5000);
      rightArm.set(.4);
    }
    else{
-     //rightArm.set(buttonMonke.getLeftY() * .9);
-     //leftArm.set(buttonMonke.getLeftY() * .9);
-   }
+     if(buttonMonke.getRightY() > .1 || buttonMonke.getRightY() < -.1 ) {
+     rightArm.set(buttonMonke.getLeftY() * .9);
+     leftArm.set(buttonMonke.getLeftY() * 9);
+     } else {
+      rightArm.set(0);
+      leftArm.set(0);
+     }
      
     if(driveController.getLeftBumper()){
       angleMotor.set(.2);
@@ -1596,9 +1601,10 @@ wait(5000);
     else{
       angleMotor.set(-buttonMonke.getRightY() * .9);
     }
-    
+    System.out.println(buttonMonke.getLeftY() + "" + buttonMonke.getRightY());
   
 }
-}
+    }
+  }
 
 // f in chat for our fallen lines of code
