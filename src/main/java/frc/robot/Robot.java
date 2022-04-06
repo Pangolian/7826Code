@@ -212,20 +212,19 @@ public class Robot extends TimedRobot {
     //CvSource cam0 = CameraServer.putVideo("Cam0", 640, 480);
     CameraServer.startAutomaticCapture(1);
     //CvSource cam1 = CameraServer.putVideo("Cam1", 640, 480);
-    CameraServer.startAutomaticCapture(2);
-    //CvSource cam2 = CameraServer.putVideo("Cam2", 640, 480);
 
     //System.out.println(x);
     //System.out.println(y);
     //System.out.println(area);
-
+    
+    // Old vision trapezoid 🥵
+    /*
     NetworkTableEntry topWidth = Shuffleboard.getTab("LiveWindow").add("Top Width", 1).getEntry();
     NetworkTableEntry topHeight = Shuffleboard.getTab("LiveWindow").add("Top Height", 1).getEntry();
     NetworkTableEntry bottomWidth = Shuffleboard.getTab("LiveWindow").add("Bottom Width", 1).getEntry();
     NetworkTableEntry bottomHeight = Shuffleboard.getTab("LiveWindow").add("Bottom Height", 1).getEntry();
     NetworkTableEntry rlOffset = Shuffleboard.getTab("LiveWindow").add("Offset", 0).getEntry();
-
-    /*
+    
     m_visionThread =
         new Thread(
             () -> {
@@ -449,11 +448,8 @@ public class Robot extends TimedRobot {
     m_intake.set(power);
   }
 
-
-
-
+  // Old auton format
   /*
-
   public void auton1() {
     //WRITE THE AUTONOMOUS CODE, YOU FOOL
   }
@@ -461,321 +457,7 @@ public class Robot extends TimedRobot {
   public void auton2() {
     //BOYNE WRITES A LOT HERE
   }
-  
-
-public void Auton1TRed()throws InterruptedException{
-  rotate(.9, -.9);
-  wait(5000);
-  driveAuton(.9);
-  wait(2000);
-  intake(.9);
-  driveAuton(.9);
-  wait(1000);
-  elevator(2000, .9);
-  shoot(2000,.9);
-  rotate(-.9, .9);
-  wait(2000);
-  driveAuton(.9);
-  wait(5000);
-  driveAuton(.9);
-  intake(.9);
-  wait(2000);
-  elevator(2000, .9);
-  rotate(.9, -.9);
-  wait(2000);
-  shoot(2000, .9);
-}
-
-public void Auton2TRed() throws InterruptedException {
-  Auton1TRed();
-  rotate(-.9, .9);
-  wait(2000);
-  driveAuton(.9);
-  wait(2000);
-}
-
-public void Auton3TRed() throws InterruptedException {
-  driveAuton(.8);
-  rotate (.9, -.9);
-  wait (5000);
-  driveAuton(.9);
-  wait(2000);
-  rotate(.9, -.9);
-  wait(2000);
-  driveAuton(.9);
-  wait(1000);
-  driveAuton(.9);
-  intake(.9);
-  wait(5000);
-  elevator(1000, .9);
-  rotate(.9, -.9); // left
-  wait(2000);
-  shoot(2000, .9);
-}
-
-public void Auton4TRed() throws InterruptedException {
-  driveAuton(.9);
-  intake(.9);
-  wait(2000);
-  elevator(1000, .9);
-  shoot(2000, .9);
-  rotate(-.9, .9); // right
-  wait(2000);
-  driveAuton(.9);
-}b
-public void Auton5TRed()throws InterruptedException{
-  Auton1TRed();
-  rotate(-.9, .9);
-  wait(2000);
-  driveAuton(.9);
-  wait(5000);
-}
-public void Auton1BBlue()throws InterruptedException{
-  driveAuton(-.9);
-  intake(.9);
-  wait(5000);
-  rotate(.9, -.9);
-  wait(1000);
-  elevator(1000,.9);
-  shoot(2000,.9);
-  rotate(.8,-.8);
-  wait(2000);
-}
-public void Auton2BBlue()throws InterruptedException{
-driveAuton(-.8);
-intake(.9);
-wait(2500);
-rotate(-.8,.8);
-wait(1000);
-shoot(250,.9);
-rotate(.8,-.8);
-driveAuton(.8);
-wait(5200);
-driveAuton(.9);
-intake(.9);
-wait(300);
-elevator(1000, .9);
-rotate(-.8,.8);
-wait(2000);
-driveAuton(.8);
-wait(2000);
-shoot(250,.9);
-driveAuton(.9);
-intake(.9);
-wait(2000);
-elevator(2000, .9);
-rotate(-.8, .8);
-wait(1000);
-shoot(250, .8);
-}
-public void Auton3BBlue()throws InterruptedException{
-driveAuton(.8);
-wait(2000);
-intake(.9);
-wait(2000);
-elevator(2000, .9);
-shoot(1000, .9);
-driveAuton(.9);
-wait(8000);
-driveAuton(1000);
-intake(.9);
-wait(2000);
-elevator(2000,.9);
-wait(2000);
-rotate(-.9,.9);
-wait(2000);
-shoot(1000,.9);
-}
-public void Auton4BBlue()throws InterruptedException{
-  driveAuton(.9);
-  wait(7000);
-  intake(2000);
-  wait(1000);
-  elevator(2000, .9);
-  shoot(1000, .9);
-  rotate(.9, -.9);
-  wait(2000);
-  driveAuton(.9);
-  wait(9000);
-  intake(.9);
-  wait(2000);
-  elevator(2000,.9);
-  rotate(.9,-.9);
-  wait(2000);
-  driveAuton(.9);
-  wait(9000);
-  intake(.9);
-  wait(2000);
-  rotate(-.9,.9);
-  wait(2000);
-  elevator(2000, .9);
-  wait(2000);
-  shoot(1000,.9);
-}
-public void Auton1TBlue()throws InterruptedException{
-  rotate(.9, -.9);
-  wait(2500);
-  driveAuton(-.8);
-  wait(10000);
-  intake(.9);
-  wait(2000);
-  elevator(2000,.9);
-  shoot(1000,.9);
-}
-public void Auton2TBlue()throws InterruptedException{
-Auton1TBlue();
-rotate(-.9, .9);
-wait(2000);
-driveAuton(.9);
-wait(10000);
-intake(.9);
-wait(2000);
-elevator(2000,.9);
-wait(1000);
-rotate(.9,-.9);
-wait(5000);
-shoot(1000,.9);
-}
-public void Auton3TBlue()throws InterruptedException{
-Auton2TBlue();
-rotate(.5,-.5);
-wait(1000);
-driveAuton(.8);
-wait(10000);
-intake(.9);
-wait(1000);
-elevator(2000, .9);
-rotate(.5,-.5);
-wait(5000);
-shoot(2500, .9);
-}
-public void Auton4TBlue()throws InterruptedException{
-  Auton1TBlue();
-  wait(1000);
-  driveAuton(-.8);
-  rotate(.5,-.5);
-  wait(7000);
-  driveAuton(.9);
-  wait(4000);
-}
-public void Auton5TBlue()throws InterruptedException{
-rotate(.5,-.5);
-wait(2000);
-driveAuton(-.8);
-wait(10000);
-rotate(.9,-.9);
-wait(5000);
-driveAuton(-.8);
-wait(8000);
-intake(.9);
-wait(20000);
-elevator(2000,.9);
-wait(2000);
-rotate(-.5,.5);
-wait(2000);
-shoot(2000,.9);
-
-
-
-}
-
-public void Auton1BRed() throws InterruptedException{
-rotate(0.5, 0.5);
-wait(500);
-rotate(0, 0);
-driveAuton(-0.8);
-wait(10000);
-intake(0.9);
-wait(2000);
-driveAuton(0);
-intake(0);
-elevator(1000, 0.6);
-shoot(1000, 0.6);
-
-}
-
-public void Auton2BRed() throws InterruptedException{
-Auton1BRed();
-driveAuton(-0.8);
-wait(10000);
-driveAuton(0);
-}
-
-public void Auton3BRed() throws InterruptedException{
-Auton1BRed();
-rotate(0.5, -0.5);
-wait(2000);
-rotate(0, 0);
-driveAuton(0.8);
-wait(10000);
-intake(0.9);
-wait(2000);
-driveAuton(0);
-intake(0);
-rotate(0.5, -0.5);
-wait(2500);
-rotate(0, 0);
-shoot(1000, 0.9);
-}
-
-public void Auton4BRed() throws InterruptedException{
-rotate(0.8, -0.8);
-wait(1000);
-driveAuton(0.9);
-wait(500);
-intake(0.9);
-wait(1000);
-driveAuton(0);
-intake(0);
-elevator(750, 0.8);
-rotate(0.8, -0.8);
-wait(500);
-shoot(750, 0.8);
-rotate(0.8, -0.8);
-wait(500);
-driveAuton(0.9);
-wait(8000);
-intake(0.9);
-wait(1000);
-driveAuton(0);
-intake(0);
-elevator(750, 0.8);
-rotate(0.7, -0.7);
-wait(750);
-shoot(750, 0.8);
-
-}
-
-public void Auton5BRed() throws InterruptedException{
-//shoot(750, 0.8);
-rotate(0.7, -0.7);
-wait(500);
-driveAuton(0.9);
-wait(250);
-intake(0.9);
-wait(1000);
-driveAuton(0);
-intake(0);
-elevator(750, 0.8);
-rotate(0.8, -0.8);
-wait(750);
-shoot(750, 0.8);
-rotate(-0.8, 0.8);
-wait(750);
-driveAuton(.9);
-rotate(-.8,.8);
-wait(2000);
-shoot(750,.8);
-
-}
-
-public void Auton6BRed() throws InterruptedException{
-rotate(-0.9, 0.9);
-wait(2000);
-driveAuton(0.9);
-wait(5000); 
-}
-*/
+  */
 
   boolean isMovedXP = false;
   boolean isMovedXN = false;
@@ -1497,6 +1179,7 @@ wait(5000);
       inRange = false;
     }
   }
+  
   public void superAim() {
     double heading_error = -tx.getDouble(0.0);
     double distance_error = -ty.getDouble(0.0);
@@ -1519,15 +1202,12 @@ wait(5000);
     double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
     double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
 
-    //calculate distance
+    // calculate distance
     return (goalHeightInches - limelightLensHeightInches)/Math.tan(angleToGoalRadians);
   }
-  //one button for angle up, one button for angle down, one buton for each side, and one buton for both sides
-  //
-  public void climbing(){
-     
-
-      
+  
+  // one button for angle up, one button for angle down, one buton for each side, and one buton for both sides
+  public void climbing(){    
     /*
     else if(driveController.getBButton()){
       rightArm.set(.3);
@@ -1540,17 +1220,16 @@ wait(5000);
       leftArm.set(0);
     }
     */
-    
-     
-    }
-    public void controler(){
-   if (driveController.getBButton()) {
+  }
+  
+  public void controler(){
+    if (driveController.getBButton()) {
       aiming();
     }  
-    if(driveController.getAButton()){
+    if (driveController.getAButton()) {
       superAim();
     }
-
+   
     if (buttonMonke.getYButton()) {
       m_elevator.set(VictorSPXControlMode.PercentOutput, 0.4);
     } else if (buttonMonke.getAButton()) {
@@ -1558,7 +1237,7 @@ wait(5000);
     } else {
       m_elevator.set(VictorSPXControlMode.PercentOutput, 0);
     }
-
+    
     if (buttonMonke.getPOV() == 90) {
       m_intake.set(0.5);
     } else if (buttonMonke.getPOV() == 270 ) {
@@ -1566,15 +1245,22 @@ wait(5000);
     } else {
       m_intake.set(0);
     }
-
+    
     if (buttonMonke.getRightTriggerAxis() != 0) {
       m_shooter.set(0.2);
     } else if (buttonMonke.getLeftTriggerAxis() != 0) {
+<<<<<<< HEAD
       m_shooter.set(0.2);
     }
    else {
+=======
+      m_shooter.set(0.1);
+    } else {
+>>>>>>> 117b00950ab7f81310a29814354d02b8f3f61e6b
       m_shooter.set(0);
+    }
    
+<<<<<<< HEAD
    }
    
    if(buttonMonke.getRightBumper()){
@@ -1591,20 +1277,34 @@ wait(5000);
       rightArm.set(0);
       leftArm.set(0);
      }
+=======
+    if (buttonMonke.getRightBumper()) {
+      rightArm.set(-.4);
+    } else if (buttonMonke.getLeftBumper()) {
+     rightArm.set(.4);
+    } else {
+     rightArm.set(buttonMonke.getLeftY() * .9);
+     leftArm.set(buttonMonke.getLeftY() * .9);
+    }
+>>>>>>> 117b00950ab7f81310a29814354d02b8f3f61e6b
      
-    if(driveController.getLeftBumper()){
+    if(driveController.getLeftBumper()) {
       angleMotor.set(.2);
     }
-    else if(driveController.getRightBumper()){
+    else if(driveController.getRightBumper()) {
       angleMotor.set(-.2);
-    }
-    else{
+    } else {
       angleMotor.set(-buttonMonke.getRightY() * .9);
     }
+<<<<<<< HEAD
     System.out.println(buttonMonke.getLeftY() + "" + buttonMonke.getRightY());
   
 }
     }
   }
+=======
+  }
+}
+>>>>>>> 117b00950ab7f81310a29814354d02b8f3f61e6b
 
 // f in chat for our fallen lines of code
