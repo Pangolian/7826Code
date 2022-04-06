@@ -9,5 +9,5 @@ Timed robot code for FRC team 7826. Many thanks to [manfart2021](https://github.
 
 # Contributors
 - [manfart2021](https://github.com/manfart2021)
-- [PangolinPope](https://github.com/manfart2021)
-- [SuperBoyne](https://github.com/manfart2021)
+- [PangolinPope](https://github.com/PangolinPope)
+- [SuperBoyne](https://github.com/SuperBoyne)
