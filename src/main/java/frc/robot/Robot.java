@@ -1014,6 +1014,11 @@ wait(5000);
                m_driveSubsystem.drive(0, 0, -0.9, false);
              } else if (time - startTime > 0) {
                m_driveSubsystem.drive(-0.4, 0, 0, false);
+            }else{
+              angleMotor.set(.5);
+              rightArm.set(.4);
+              leftArm.set(.4);
+             }
              }
   //picks up first three balls closest to the tarmac, and shoots all of them (one at a time)
             if (time - startTime > 5) {
@@ -1039,6 +1044,11 @@ wait(5000);
                m_intake.set(0.7);
              } else if (time - startTime > 0) {
                m_driveSubsystem.drive(-.4, 0, 0, false);
+             }else{
+              angleMotor.set(.5);
+              rightArm.set(.4);
+              leftArm.set(.4);
+             }
              }
     
     //picks up closest ball to tarmac, shoots it, then goes to the Hang
@@ -1062,7 +1072,12 @@ wait(5000);
              } else if (time - startTime > 3) {
                m_driveSubsystem.drive(0, 0, 0, false);
                m_elevator.set(ControlMode.PercentOutput, 0.8);
-              }
+            }else{
+              angleMotor.set(.5);
+              rightArm.set(.4);
+              leftArm.set(.4);
+             }
+             }
 
     //drives out of tarmac, picks up and shoots ball closest to the tarmac, then goes by the left terminal and picks up the ball closest to that, 
     then shoots it
@@ -1082,6 +1097,11 @@ wait(5000);
                m_driveSubsystem.drive(.4, 0, 0, false);
              } else if (time - startTime > 0) {
                 m_driveSubsystem.drive(0, 0, -.9, false);
+            }else{
+              angleMotor.set(.5);
+              rightArm.set(.4);
+              leftArm.set(.4);
+             }             
              }
               */
   /*
@@ -1547,7 +1567,7 @@ wait(5000);
     }
 
     if (buttonMonke.getRightTriggerAxis() != 0) {
-      m_shooter.set(0.4);
+      m_shooter.set(0.8);
     } else if (buttonMonke.getLeftTriggerAxis() != 0) {
       m_shooter.set(0.1);
     }
@@ -1557,14 +1577,14 @@ wait(5000);
    }
    
    if(buttonMonke.getRightBumper()){
-     rightArm.set(-.4);
+     //rightArm.set(-.4);
    }
    else if(buttonMonke.getLeftBumper()){
      rightArm.set(.4);
    }
    else{
-     rightArm.set(buttonMonke.getLeftY() * .9);
-     leftArm.set(buttonMonke.getLeftY() * .9);
+     //rightArm.set(buttonMonke.getLeftY() * .9);
+     //leftArm.set(buttonMonke.getLeftY() * .9);
    }
      
     if(driveController.getLeftBumper()){
