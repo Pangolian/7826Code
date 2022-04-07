@@ -5,13 +5,10 @@ Timed robot code for FRC team 7826. Many thanks to [manfart2021](https://github.
 
 ## Vision
 - Initially tried to use Kangaroo + GRIP for processing
-- After struggling to get the Kangaroo working for our first competition, we switched to a Limelight 2+
-<!-- Picture of the Limelight mount here? -->
+- After struggling to get the Kangaroo working for our first competition, we switched to a Limelight 2+ <!-- Picture of the Limelight mount here? -->
 - Followed Limelight documentation to create methods for aiming and getting in range
 - Used crosshair calibration (instead of estimating distance) for the aiming methods
-- Created a vision ring  for testing
-<!-- Picture of the vision ring here? -->
-
+- Created a vision ring  for testing <!-- Picture of the vision ring here? -->
 ## Auton
 
 # Contributors
