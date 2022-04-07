@@ -2,7 +2,10 @@
 Timed robot code for FRC team 7826. Many thanks to [manfart2021](https://github.com/manfart2021) for helping us make swerve drive possible.
 
 ## Driving
-
+### Swerve Drive
+Programmed by [manfart2021](https://github.com/manfart2021)
+### Slowing down functions
+Programmed by [SuperBoyne](https://github.com/SuperBoyne) and Elijah
 ## Vision
 - Initially tried to use Kangaroo + GRIP for processing
 - After struggling to get the Kangaroo working for our first competition, we switched to a Limelight 2+ <!-- Picture of the Limelight mount here? -->
