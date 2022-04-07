@@ -15,3 +15,4 @@ Timed robot code for FRC team 7826. Many thanks to [manfart2021](https://github.
 - [manfart2021](https://github.com/manfart2021)
 - [PangolinPope](https://github.com/PangolinPope)
 - [SuperBoyne](https://github.com/SuperBoyne)
+- [Megabuilder2001](https://github.com/Megabuilder2001)
