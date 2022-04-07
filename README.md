@@ -5,7 +5,7 @@ Timed robot code for FRC team 7826. Many thanks to [manfart2021](https://github.
 ### Swerve Drive
 Programmed by [manfart2021](https://github.com/manfart2021)
 ### Slowing down functions
-Programmed by [SuperBoyne](https://github.com/SuperBoyne) and Elijah
+Programmed by [SuperBoyne](https://github.com/SuperBoyne) and Jetvac2
 ## Vision
 - Initially tried to use Kangaroo + GRIP for processing
 - After struggling to get the Kangaroo working for our first competition, we switched to a Limelight 2+ <!-- Picture of the Limelight mount here? -->
@@ -19,3 +19,6 @@ Programmed by [SuperBoyne](https://github.com/SuperBoyne) and Elijah
 - [PangolinPope](https://github.com/PangolinPope)
 - [SuperBoyne](https://github.com/SuperBoyne)
 - [Megabuilder2001](https://github.com/Megabuilder2001)
+- benjabonk
+- Jetvac2
+- Lookingforstars
