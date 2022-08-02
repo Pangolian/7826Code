@@ -151,8 +151,10 @@ public class Robot extends TimedRobot {
   NetworkTableEntry tx = limelightTable.getEntry("tx");
   NetworkTableEntry ty = limelightTable.getEntry("ty");
   NetworkTableEntry ta = limelightTable.getEntry("ta");
+
   double KpAim = -0.1; // proportional control constant
   double KpDistance = -0.1;
+
   double min_aim_command = 0.05; // 0.05
   
   // how many degrees back is your limelight rotated from perfectly vertical?
@@ -186,6 +188,13 @@ public class Robot extends TimedRobot {
     CameraServer.startAutomaticCapture(2);
     //CvSource cam2 = CameraServer.putVideo("Cam2", 640, 480);
     
+
+
+    //System.out.println(x);
+    //System.out.println(y);
+    //System.out.println(area);
+    
+    // Old vision trapezoid 🥵
     /*
     NetworkTableEntry topWidth = Shuffleboard.getTab("LiveWindow").add("Top Width", 1).getEntry();
     NetworkTableEntry topHeight = Shuffleboard.getTab("LiveWindow").add("Top Height", 1).getEntry();
@@ -196,6 +205,8 @@ public class Robot extends TimedRobot {
     
     // Old vision proc (hot trapezoid)
     /*
+
+    
     m_visionThread =
         new Thread(
             () -> {
@@ -382,6 +393,17 @@ public class Robot extends TimedRobot {
     m_intake.set(power);
   }
 
+  // Old auton format
+  /*
+  public void auton1() {
+    //WRITE THE AUTONOMOUS CODE, YOU FOOL
+  }
+
+  public void auton2() {
+    //BOYNE WRITES A LOT HERE
+  }
+  */
+
   boolean isMovedXP = false;
   boolean isMovedXN = false;
   boolean isMovedYP = false;
@@ -400,9 +422,10 @@ public class Robot extends TimedRobot {
       deceleration();
       
       System.out.println(xSpeed + " and" + ySpeed);
-      m_driveSubsystem.drive(MathUtil.applyDeadband(-driveController.getRightY(), OIConstants.kdeadband) * 2 ,MathUtil.applyDeadband(driveController.getRightX(), OIConstants.kdeadband) * 2, MathUtil.applyDeadband(driveController.getLeftX(), OIConstants.kdeadband) * 0.6, //4
+      m_driveSubsystem.drive(MathUtil.applyDeadband(-driveController.getRightY(), OIConstants.kdeadband) * 2 ,MathUtil.applyDeadband(driveController.getRightX(), OIConstants.kdeadband) * 2, MathUtil.applyDeadband(driveController.getLeftX(), OIConstants.kdeadband) * .8, //4
         false);
       System.out.println(MathUtil.applyDeadband(driveController.getLeftX(), OIConstants.kdeadband) * 0.6);
+      //2, 2 .6
 
       controler();
       // TwT
@@ -553,6 +576,11 @@ public class Robot extends TimedRobot {
                m_driveSubsystem.drive(0, 0, -0.9, false);
              } else if (time - startTime > 0) {
                m_driveSubsystem.drive(-0.4, 0, 0, false);
+            }else{
+              angleMotor.set(.5);
+              rightArm.set(.4);
+              leftArm.set(.4);
+             }
              }
   //picks up first three balls closest to the tarmac, and shoots all of them (one at a time)
             if (time - startTime > 5) {
@@ -578,6 +606,11 @@ public class Robot extends TimedRobot {
                m_intake.set(0.7);
              } else if (time - startTime > 0) {
                m_driveSubsystem.drive(-.4, 0, 0, false);
+             }else{
+              angleMotor.set(.5);
+              rightArm.set(.4);
+              leftArm.set(.4);
+             }
              }
     
     //picks up closest ball to tarmac, shoots it, then goes to the Hang
@@ -603,6 +636,13 @@ public class Robot extends TimedRobot {
                m_elevator.set(ControlMode.PercentOutput, 0.8);
               }
   
+            }else{
+              angleMotor.set(.5);
+              rightArm.set(.4);
+              leftArm.set(.4);
+             }
+             }
+
     //drives out of tarmac, picks up and shoots ball closest to the tarmac, then goes by the left terminal and picks up the ball closest to that, 
     then shoots it
               if (time - startTime > 5) {
@@ -621,6 +661,11 @@ public class Robot extends TimedRobot {
                m_driveSubsystem.drive(.4, 0, 0, false);
              } else if (time - startTime > 0) {
                 m_driveSubsystem.drive(0, 0, -.9, false);
+            }else{
+              angleMotor.set(.5);
+              rightArm.set(.4);
+              leftArm.set(.4);
+             }             
              }
               */
   
@@ -739,20 +784,23 @@ public class Robot extends TimedRobot {
   public void aiming() {
     double heading_error = -tx.getDouble(0.0);
     double steering_adjust = 0.0;
+    
     if (tx.getDouble(0.0) > 1.0) {
-      steering_adjust = KpAim*heading_error - min_aim_command;
+      steering_adjust = KpAim * heading_error - min_aim_command;
     } else if (tx.getDouble(0.0) < 1.0) {
-      steering_adjust = KpAim*heading_error + min_aim_command;
+      steering_adjust = KpAim * heading_error + min_aim_command;
     }
 
     m_driveSubsystem.drive(0, 0, steering_adjust * 1, false); // * 0.6
     
+
     if (MathUtil.applyDeadband(tx.getDouble(0.0), 30) == 0) {
       inRange = true;
     } else {
       inRange = false;
     }
   }
+  
   public void superAim() {
     double heading_error = -tx.getDouble(0.0);
     double distance_error = -ty.getDouble(0.0);
@@ -760,11 +808,12 @@ public class Robot extends TimedRobot {
 
     if (tx.getDouble(0.0) > 1.0) {
       steering_adjust = KpAim * heading_error - min_aim_command;
-    }
-    else if(tx.getDouble(0.0) < -1){
+    } else if(tx.getDouble(0.0) < -1.0) {
       steering_adjust = KpAim * heading_error + min_aim_command; 
     }
+    
     double distance_adjust = KpDistance * distance_error;
+    
     m_driveSubsystem.drive(distance_adjust, 0, steering_adjust * 1, false);
   }
 
@@ -775,23 +824,43 @@ public class Robot extends TimedRobot {
     double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
     double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
 
-    //calculate distance
+    // calculate distance
     return (goalHeightInches - limelightLensHeightInches)/Math.tan(angleToGoalRadians);
   }
   //one button for angle up, one button for angle down, one buton for each side, and one buton for both sides
     
   public void controler(){
    if (driveController.getBButton()) {
+  
+  // one button for angle up, one button for angle down, one buton for each side, and one buton for both sides
+  public void climbing(){    
+    /*
+    else if(driveController.getBButton()){
+      rightArm.set(.3);
+    }
+    else if(driveController.getYButton()){
+      leftArm.set(.3);
+    }
+    else{
+      rightArm.set(0);
+      leftArm.set(0);
+    }
+    */
+  }
+  
+  public void controler(){
+    if (driveController.getBButton()) {
       aiming();
     }  
-    if(driveController.getAButton()){
+    if (driveController.getAButton()) {
       superAim();
     }
     
+   
     if (buttonMonke.getYButton()) {
-      m_elevator.set(VictorSPXControlMode.PercentOutput, 0.8);
+      m_elevator.set(VictorSPXControlMode.PercentOutput, 0.4);
     } else if (buttonMonke.getAButton()) {
-      m_elevator.set(VictorSPXControlMode.PercentOutput, -0.8);
+      m_elevator.set(VictorSPXControlMode.PercentOutput, -0.4);
     } else {
       m_elevator.set(VictorSPXControlMode.PercentOutput, 0);
     }
@@ -803,35 +872,30 @@ public class Robot extends TimedRobot {
     } else {
       m_intake.set(0);
     }
-
+    
     if (buttonMonke.getRightTriggerAxis() != 0) {
-      m_shooter.set(0.4);
+      m_shooter.set(0.2);
     } else if (buttonMonke.getLeftTriggerAxis() != 0) {
       m_shooter.set(0.1);
-    }
-   else {
+    } else {
       m_shooter.set(0);
+    }
    
-   }
-   
-   if(buttonMonke.getRightBumper()){
-     rightArm.set(-.4);
-   }
-   else if(buttonMonke.getLeftBumper()){
+    if (buttonMonke.getRightBumper()) {
+      rightArm.set(-.4);
+    } else if (buttonMonke.getLeftBumper()) {
      rightArm.set(.4);
-   }
-   else{
+    } else {
      rightArm.set(buttonMonke.getLeftY() * .9);
      leftArm.set(buttonMonke.getLeftY() * .9);
-   }
+    }
      
-    if(driveController.getLeftBumper()){
+    if(driveController.getLeftBumper()) {
       angleMotor.set(.2);
     }
-    else if(driveController.getRightBumper()){
+    else if(driveController.getRightBumper()) {
       angleMotor.set(-.2);
-    }
-    else{
+    } else {
       angleMotor.set(-buttonMonke.getRightY() * .9);
     }
   }

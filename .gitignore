@@ -4,6 +4,7 @@
 *
 
 !src/main/java/frc/robot/*
+!bin/*
 
 ### C++ ###
 # Prerequisites
